@@ -2,19 +2,56 @@ from typing import List, Tuple, Set, Iterable
 import numpy as np
 import itertools
 
-N = 5
-Grid = ['m----', '--x--', '--xx-', '-xxx-', '----p']
+
+class GridError(Exception):
+    pass
 
 
-def parse_grid(grid: List[str]) -> Tuple[tuple, tuple, np.ndarray]:
+def input_grid(grid: list = None) -> list:
+    """
+    Inputting grid and splitting it to list of strings
+    :param grid: (optional) predefined grid
+    :return: grid
+    """
+    if grid is None:
+        print("Please enter grid as strings, divided by commas")
+        in_grid = input("Grid: ")
+        processed_grid = in_grid.replace(' ', '').split(',')
+        return processed_grid
+    else:
+        return grid
+
+
+def input_grid_size(n: int = None) -> int:
+    """
+    Inputting grid size and checking if it is valid
+    :param n: (optional) predefined grid size
+    :return: grid size
+    """
+    if n is None:
+        print("Please enter grid size as integer")
+        in_size = input("Grid size: ")
+        try:
+            processed_size = int(in_size)
+            if processed_size <= 0:
+                raise GridError("Incorrect grid size, should be more than 0")
+            return processed_size
+        except ValueError:
+            print("Not a correct integer number")
+    else:
+        return n
+
+
+def parse_grid(grid: List[str], grid_size: int) -> Tuple[tuple, tuple, np.ndarray]:
     """
     Validating the inputted grid and returning the positions of Mario and princess, along with grid in array format
+    :param grid_size: size of the grid (size*size)
     :param grid: inputted grid as list of strings
     :return: Mario and princess positions in tuple format and validated grid in numpy array format
     """
     # checking if the grid is the correct size (N)
-    if len(grid) != N:
-        raise ValueError("Incorrect grid size")
+    if len(grid) != grid_size:
+        raise GridError("Incorrect grid size")
 
     # list of correct signs in the grid
     acceptable_signs = ['-', 'm', 'p', 'x']
@@ -25,43 +62,38 @@ def parse_grid(grid: List[str]) -> Tuple[tuple, tuple, np.ndarray]:
     for line_num, line in enumerate(grid):
         # type check
         if type(line) is not str:
-            raise ValueError("Line {} is not defined by string".format(line_num))
+            raise GridError("Line {} is not defined by string".format(line_num))
         # line (row) size check
-        elif len(line) != N:
-            raise ValueError("Incorrect line {} size".format(line_num))
+        elif len(line) != grid_size:
+            raise GridError("Incorrect line {} size".format(line_num))
 
         for elem_num, elem in enumerate(line):
             # checking if every sign in the strings is acceptable
             if elem not in acceptable_signs:
-                raise ValueError("Incorrect sign on line {}, position {}".format(line_num, elem_num))
+                raise GridError("Incorrect sign on line {}, position {}".format(line_num, elem_num))
             # getting princess position
             elif elem == 'p':
                 if princess_position is None:
                     princess_position = (line_num, elem_num)
                 else:
-                    raise ValueError("Multiple princess positions defined")
+                    raise GridError("Multiple princess positions defined")
             # getting Mario position
             elif elem == 'm':
                 if mario_position is None:
                     mario_position = (line_num, elem_num)
                 else:
-                    raise ValueError("Multiple Mario positions defined")
+                    raise GridError("Multiple Mario positions defined")
 
     # check if Mario and princess were found on the grid
     if mario_position is None:
-        raise ValueError("Mario position is not defined")
+        raise GridError("Mario position is not defined")
     if mario_position is None:
-        raise ValueError("Princess position is not defined")
+        raise GridError("Princess position is not defined")
 
     # converting grid to usable array form
     grid_array = np.array([list(line) for line in grid])
 
     return mario_position, princess_position, grid_array
-
-
-m_pos, p_pos, arr = parse_grid(Grid)
-
-print(arr)
 
 
 def get_easy_possible_paths(mario_position: tuple, princess_position: tuple) -> Set[tuple]:
@@ -84,9 +116,6 @@ def get_easy_possible_paths(mario_position: tuple, princess_position: tuple) -> 
     # create possible paths from possible moves, using set to remove duplicates
     all_paths_list = set(itertools.permutations(moves_list))
     return all_paths_list
-
-
-all_paths = get_easy_possible_paths(m_pos, p_pos)
 
 
 def find_working_paths(paths: Iterable[tuple], starting_position: tuple, grid: np.ndarray) -> List[tuple]:
@@ -113,13 +142,6 @@ def find_working_paths(paths: Iterable[tuple], starting_position: tuple, grid: n
             successful_paths.append(tuple(moves_dict[move] for move in path))
 
     return successful_paths
-
-
-print(all_paths)
-
-working_paths = find_working_paths(all_paths, m_pos, arr)
-
-print(working_paths)
 
 
 def check_valid_move(grid: np.ndarray, current_position: tuple, move: tuple) -> bool:
@@ -151,16 +173,20 @@ def check_valid_move(grid: np.ndarray, current_position: tuple, move: tuple) -> 
         return False
 
 
-"""
-1. Check all possible moves (not in history and not dead ends)
-2. Select the most profitable move (least distance to target)
-3. Move there, add previous position to history and move to path
-4. Repeat 1 and 2, if no move is possible, declare position dead end and move to previous position in history
-5. Repeat until the target is reached
-"""
-
-
 def pathfinder(starting_position: tuple, target_position: tuple, grid: np.ndarray) -> List[tuple]:
+    """
+    Path finding function to seek the available path if the 'easy' way fails
+    Short description:
+        1. Check all possible moves (not in history and not dead ends)
+        2. Select the most profitable move (least distance to target)
+        3. Move there, add previous position to history and move to path
+        4. Go back to 1, if no move is possible, declare position dead end and move to previous position in history
+        5. Repeat until the target is reached
+    :param starting_position: starting position
+    :param target_position: target position
+    :param grid: validated array of a grid
+    :return: list with available path
+    """
     moves_dict = {(1, 0): "DOWN", (-1, 0): "UP", (0, 1): "RIGHT", (0, -1): "LEFT"}
 
     moves = []
@@ -168,11 +194,16 @@ def pathfinder(starting_position: tuple, target_position: tuple, grid: np.ndarra
     dead_ends = []
 
     def rate_position(current, target):
+        """
+        Helper function to calculate distance to target
+        """
         return (target[0] - current[0]) ** 2 + (target[1] - current[1]) ** 2
 
+    # Setting starting position
     current_position = starting_position
     while current_position != target_position:
         possible_moves = {}
+        # Checking for each possible move and rating them
         for m in moves_dict.keys():
             if check_valid_move(grid, current_position, m):
                 new_position = tuple(np.add(current_position, m))
@@ -180,18 +211,42 @@ def pathfinder(starting_position: tuple, target_position: tuple, grid: np.ndarra
                 if new_position not in path and new_position not in dead_ends:
                     possible_moves[new_position_rating] = m
 
+        # if there are possible move, select the one, that would move us the closest to target
         if possible_moves:
-            path.append(current_position)
-            moves.append(possible_moves[min(possible_moves)])
+            path.append(current_position)  # save position to path
+            moves.append(possible_moves[min(possible_moves)])  # save move to move list
             current_position = tuple(np.add(current_position, possible_moves[min(possible_moves)]))
+        # if not, go back one move and add current position to dead ends
         else:
-            dead_ends.append(current_position)
-            current_position = path[-1]
-            path.pop(-1)
-            moves.pop(-1)
+            dead_ends.append(current_position)  # save position to dead ends
+            current_position = path[-1]  # move back one step
+            path.pop(-1)  # delete step from path
+            moves.pop(-1)  # delete move from move list
 
     return [tuple(moves_dict[move] for move in moves)]
 
 
-working_paths_alt = pathfinder(m_pos, p_pos, arr)
-print(working_paths_alt)
+def main():
+    try:
+        size = input_grid_size()
+        grid = input_grid()
+
+        mario_pos, princess_pos, v_grid = parse_grid(grid, size)
+
+        print(v_grid)
+
+        all_paths = get_easy_possible_paths(mario_pos, princess_pos)
+
+        working_paths = find_working_paths(all_paths, mario_pos, v_grid)
+        if not working_paths:
+            working_paths = pathfinder(mario_pos, princess_pos, v_grid)
+
+        print(working_paths)
+
+    except GridError as e:
+        print("Grid is not correctly defined")
+        print(e)
+
+
+if __name__ == "__main__":
+    main()
