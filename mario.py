@@ -229,10 +229,10 @@ def pathfinder(starting_position: tuple, target_position: tuple, grid: np.ndarra
     return [tuple(moves_dict[move] for move in moves)]
 
 
-def main(grid: list = None, n: int = None):
+def main(predef_size: int = None, predef_grid: List[str] = None) -> Tuple[bool, List[str] or None]:
     try:
-        size = input_grid_size(n)
-        grid = input_grid(grid)
+        size = input_grid_size(predef_size)
+        grid = input_grid(predef_grid)
 
         mario_pos, princess_pos, v_grid = parse_grid(grid, size)
 

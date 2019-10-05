@@ -30,7 +30,7 @@ for i in range(10):
 
     grid = create_random_grid(size)
 
-    error_flag, paths = main(grid, size)
+    error_flag, paths = main(size, grid)
 
     entry = dict(id=i, grid_size=size, grid=','.join(grid), error_flag=error_flag,
                  path=','.join(paths[0]) if paths is not None else None)
