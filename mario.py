@@ -245,12 +245,12 @@ def main(grid: list = None, n: int = None):
             working_paths = pathfinder(mario_pos, princess_pos, v_grid)
 
         print(working_paths)
-        return True, working_paths
+        return False, working_paths
 
     except GridError as e:
         print("Grid is not correctly defined")
         print(e)
-        return False, None
+        return True, None
 
 
 if __name__ == "__main__":
