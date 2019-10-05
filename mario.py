@@ -163,7 +163,7 @@ def check_valid_move(grid: np.ndarray, current_position: tuple, move: tuple) -> 
         return all(np.array(a) < np.array(b))
 
     # checking if coordinates are inside the array (between (0,0) and (N,N))
-    if (0, 0) <= moved_position and compare_coordinates(moved_position, grid.shape):
+    if compare_coordinates((0, 0), moved_position) and compare_coordinates(moved_position, grid.shape):
         # checking if the coordinates are not on the obstacle
         if grid[moved_position] == 'x':
             return False
