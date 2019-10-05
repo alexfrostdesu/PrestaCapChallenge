@@ -173,7 +173,7 @@ def check_valid_move(grid: np.ndarray, current_position: tuple, move: tuple) -> 
         return False
 
 
-def pathfinder(starting_position: tuple, target_position: tuple, grid: np.ndarray) -> List[tuple]:
+def pathfinder(starting_position: tuple, target_position: tuple, grid: np.ndarray) -> List[tuple] or None:
     """
     Path finding function to seek the available path if the 'easy' way fails
     Short description:
@@ -218,6 +218,9 @@ def pathfinder(starting_position: tuple, target_position: tuple, grid: np.ndarra
             current_position = tuple(np.add(current_position, possible_moves[min(possible_moves)]))
         # if not, go back one move and add current position to dead ends
         else:
+            # if no moves available from the start, return None
+            if current_position == starting_position:
+                return None
             dead_ends.append(current_position)  # save position to dead ends
             current_position = path[-1]  # move back one step
             path.pop(-1)  # delete step from path
@@ -226,10 +229,10 @@ def pathfinder(starting_position: tuple, target_position: tuple, grid: np.ndarra
     return [tuple(moves_dict[move] for move in moves)]
 
 
-def main():
+def main(grid: list = None, n: int = None):
     try:
-        size = input_grid_size()
-        grid = input_grid()
+        size = input_grid_size(n)
+        grid = input_grid(grid)
 
         mario_pos, princess_pos, v_grid = parse_grid(grid, size)
 
