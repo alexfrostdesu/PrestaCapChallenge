@@ -34,9 +34,10 @@ def create_entries_table(engine, base):
                                                                            self.path)
 
     # actually creating described table
-    base.metadata.create_all(engine, tables=[Entries.__table__])
+    table = Entries
+    base.metadata.create_all(engine, tables=[table.__table__])
 
-    return Entries
+    return table
 
 
 def add_entry(session, table, entry):
@@ -46,9 +47,18 @@ def add_entry(session, table, entry):
 
 
 def select_all_from(session, table):
+    """
+    Function to select all from provided table (like SELECT * FROM table) and convert to readable list of dict
+    :param session: sqlalchemy session
+    :param table: table to select from
+    :return: list of row in table as dictionaries
+    """
     # querying stuff from db
     query = session.query(table).all()
+    result = []
     for row in query:
-        print(row.__dict__)
+        row_dict = row.__dict__
+        row_dict.pop('_sa_instance_state')  # deleting orm object
+        result.append(row_dict)
 
-    return [row.__dict__ for row in query]
+    return result

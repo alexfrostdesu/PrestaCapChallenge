@@ -37,4 +37,5 @@ for i in range(10):
     sql.add_entry(session, entries, entry)
 
 results = sql.select_all_from(session, entries)
-# print(results)
+for row in results:
+    print(row)
