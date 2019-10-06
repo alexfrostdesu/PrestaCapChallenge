@@ -18,10 +18,6 @@ def create_random_grid(grid_size):
     return grid
 
 
-test = ["--m, -xx, --p"]
-
-print(test[0][2])
-
 engine, session, base = sql_handle.create_database()
 entries = sql_handle.create_entries_table(engine, base)
 
@@ -29,7 +25,7 @@ for i in range(10):
     size = random.randint(3, 5)
 
     grid = create_random_grid(size)
-
+    print(grid)
     error_flag, paths = main(size, grid)
 
     entry = dict(id=i, grid_size=size, grid=','.join(grid), error_flag=error_flag,
