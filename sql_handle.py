@@ -1,15 +1,15 @@
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, Boolean
 
 
 def create_database():
     # creating database engine
-    engine = create_engine('sqlite:///:memory:', echo=True)
+    engine = create_engine('sqlite:////tmp/mario.db')
 
     # creating session to work with database
-    db_session = sessionmaker(bind=engine)
+    db_session = scoped_session(sessionmaker(bind=engine))
     session = db_session()
 
     # creating base for declarations
@@ -79,3 +79,8 @@ def select_id_from(session, table, id):
     # querying stuff from db
     query = session.query(table).filter(table.id == id)
     return convert_rows_to_dict(query)
+
+
+def select_count_from(session, table):
+    count = session.query(table).count()
+    return count

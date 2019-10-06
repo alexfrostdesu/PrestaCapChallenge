@@ -39,7 +39,13 @@ def input_grid_size(n: int = None) -> int:
         except ValueError:
             print("Not a correct integer number")
     else:
-        return n
+        try:
+            processed_size = int(n)
+            if processed_size <= 0:
+                raise GridError("Incorrect grid size, should be more than 0")
+            return processed_size
+        except ValueError:
+            print("Not a correct integer number")
 
 
 def parse_grid(grid: List[str], grid_size: int) -> Tuple[tuple, tuple, np.ndarray]:
