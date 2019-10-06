@@ -1,12 +1,12 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String, Boolean
+from sqlalchemy import Column, Integer, String, Boolean, Float
 
 
 def create_database():
     # creating database engine
-    engine = create_engine('sqlite:////tmp/mario.db')
+    engine = create_engine(r'sqlite:///D:\sqlite\dbmario.db')
 
     # creating session to work with database
     db_session = scoped_session(sessionmaker(bind=engine))
@@ -28,6 +28,7 @@ def create_entries_table(engine, base):
         grid = Column(String)
         error_flag = Column(Boolean)
         path = Column(String)
+        request_time = Column(Float)
 
         def __repr__(self):
             return 'Grid size {}, Grid {}, Error_flag: {}, Path {}'.format(self.grid_size, self.grid, self.error_flag,
@@ -35,7 +36,12 @@ def create_entries_table(engine, base):
 
     # actually creating described table
     table = Entries
-    base.metadata.create_all(engine, tables=[table.__table__])
+    if not engine.dialect.has_table(engine, 'entries'):
+        base.metadata.create_all(engine, tables=[table.__table__])
+    # if described table exists, drop it to truncate
+    else:
+        table.__table__.drop(engine)
+        base.metadata.create_all(engine, tables=[table.__table__])
 
     return table
 
