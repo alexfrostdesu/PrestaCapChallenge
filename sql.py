@@ -46,15 +46,7 @@ def add_entry(session, table, entry):
     session.commit()
 
 
-def select_all_from(session, table):
-    """
-    Function to select all from provided table (like SELECT * FROM table) and convert to readable list of dict
-    :param session: sqlalchemy session
-    :param table: table to select from
-    :return: list of row in table as dictionaries
-    """
-    # querying stuff from db
-    query = session.query(table).all()
+def convert_rows_to_dict(query):
     result = []
     for row in query:
         row_dict = row.__dict__
@@ -62,3 +54,28 @@ def select_all_from(session, table):
         result.append(row_dict)
 
     return result
+
+
+def select_all_from(session, table):
+    """
+    Function to select all from provided table (like SELECT * FROM table)
+    :param session: sqlalchemy session
+    :param table: table to select from
+    :return: list of rows in table as dictionaries
+    """
+    # querying stuff from db
+    query = session.query(table).all()
+    return convert_rows_to_dict(query)
+
+
+def select_id_from(session, table, id):
+    """
+    Function to select specific id from provided table (like SELECT * FROM table WHERE table.id=id)
+    :param session: sqlalchemy session
+    :param table: table to select from
+    :param id: id to get
+    :return: list of rows in table as dictionaries
+    """
+    # querying stuff from db
+    query = session.query(table).filter(table.id == id)
+    return convert_rows_to_dict(query)

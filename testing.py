@@ -39,3 +39,5 @@ for i in range(10):
 results = sql.select_all_from(session, entries)
 for row in results:
     print(row)
+id_1 = sql.select_id_from(session, entries, 1)
+print(id_1)
