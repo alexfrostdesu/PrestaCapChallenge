@@ -236,21 +236,28 @@ def pathfinder(starting_position: tuple, target_position: tuple, grid: np.ndarra
 
 
 def main(predef_size: int = None, predef_grid: List[str] = None) -> Tuple[bool, List[str] or None]:
+    """
+    Running the game itself
+    """
     try:
+        # getting the game settings
         size = input_grid_size(predef_size)
         grid = input_grid(predef_grid)
 
+        # parsing the grid
         mario_pos, princess_pos, v_grid = parse_grid(grid, size)
 
         print(v_grid)
 
+        # getting all possible (easy) paths
         all_paths = get_easy_possible_paths(mario_pos, princess_pos)
 
+        # testing all possible (easy) paths
         working_paths = find_working_paths(all_paths, mario_pos, v_grid)
+        # if none of easy paths works, try to find path
         if not working_paths:
             working_paths = pathfinder(mario_pos, princess_pos, v_grid)
 
-        print(working_paths)
         return False, working_paths
 
     except GridError as e:
