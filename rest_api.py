@@ -19,14 +19,15 @@ def create_response(data, status):
 
 class Game(Resource):
     """
-    Class for Auctioneer role to create item bidding list and initiate bid award process
+    Class for Game endpoint to post game settings and get game results
     """
     def get(self):
         """
-        Initiates bid award process
-        Returns the result
+        Get game settings and results from database
         """
+        game_info = sql_handle.select_all_from(session, entries)
 
+        response_data = game_info
         status = HTTPStatus.OK
         return create_response(response_data, status)
 
@@ -38,7 +39,7 @@ class Game(Resource):
         # getting game settings
         game_settings = request.form.to_dict(flat=False)
         grid = game_settings["grid"]
-        grid_size = game_settings['grid_size'][0]
+        grid_size = game_settings["grid_size"][0]
 
         # assigning game id
         game_id = sql_handle.select_count_from(session, entries)
@@ -51,14 +52,14 @@ class Game(Resource):
                      path=','.join(paths[0]) if paths is not None else None)
 
         # returning game result
-        response_data = {'error_flag': error_flag, 'paths': paths}
+        response_data = {"game_id": game_id, "results": {"error_flag": error_flag, "paths": paths}}
         status = HTTPStatus.ACCEPTED
 
         # after request is completed, add new row to the database along with request time
         @after_this_request
         def add_entry(response):
             request_time = time.time() - before
-            entry['request_time'] = request_time
+            entry["request_time"] = request_time
             sql_handle.add_entry(session, entries, entry)
             return response
 

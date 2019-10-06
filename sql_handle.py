@@ -5,8 +5,12 @@ from sqlalchemy import Column, Integer, String, Boolean, Float
 
 
 def create_database():
+    """
+    Function to initialize DB
+    :return: engine, session, base
+    """
     # creating database engine
-    engine = create_engine(r'sqlite:///D:\sqlite\dbmario.db')
+    engine = create_engine(r'sqlite:///D:\sqlite\dbmario.db', connect_args={'check_same_thread': False})
 
     # creating session to work with database
     db_session = scoped_session(sessionmaker(bind=engine))
@@ -19,6 +23,12 @@ def create_database():
 
 
 def create_entries_table(engine, base):
+    """
+    Function to describe entries table and create it in the DB
+    :param engine: sqlalchemy engine
+    :param base: sqlalchemy base
+    :return: described table
+    """
     # describing table for entries
     class Entries(base):
         __tablename__ = 'entries'
@@ -47,12 +57,22 @@ def create_entries_table(engine, base):
 
 
 def add_entry(session, table, entry):
-    # add entry and commit it to database
+    """
+    Add entry and commit it to database (like INSERT INTO, COMMIT)
+    :param session: sqlalchemy session
+    :param table: table to select from
+    :param entry: dictionary with row
+    """
     session.add(table(**entry))
     session.commit()
 
 
-def convert_rows_to_dict(query):
+def convert_rows_to_dict(query) -> list:
+    """
+    Function to convert query rows to readable dictionary
+    :param query: sqlalchemy query
+    :return:
+    """
     result = []
     for row in query:
         row_dict = row.__dict__
@@ -62,19 +82,19 @@ def convert_rows_to_dict(query):
     return result
 
 
-def select_all_from(session, table):
+def select_all_from(session, table) -> list:
     """
     Function to select all from provided table (like SELECT * FROM table)
     :param session: sqlalchemy session
     :param table: table to select from
     :return: list of rows in table as dictionaries
     """
-    # querying stuff from db
+    # querying all stuff from db
     query = session.query(table).all()
     return convert_rows_to_dict(query)
 
 
-def select_id_from(session, table, id):
+def select_id_from(session, table, id) -> list:
     """
     Function to select specific id from provided table (like SELECT * FROM table WHERE table.id=id)
     :param session: sqlalchemy session
@@ -82,11 +102,17 @@ def select_id_from(session, table, id):
     :param id: id to get
     :return: list of rows in table as dictionaries
     """
-    # querying stuff from db
+    # querying specific stuff from db
     query = session.query(table).filter(table.id == id)
     return convert_rows_to_dict(query)
 
 
-def select_count_from(session, table):
+def select_count_from(session, table) -> int:
+    """
+    Function to select row count from provided table (like SELECT COUNT(*) FROM table)
+    :param session: sqlalchemy session
+    :param table: table to select from
+    :return: row count
+    """
     count = session.query(table).count()
     return count
