@@ -1,3 +1,4 @@
+from typing import List
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy.ext.declarative import declarative_base
@@ -67,7 +68,7 @@ def add_entry(session, table, entry):
     session.commit()
 
 
-def convert_rows_to_dict(query) -> list:
+def convert_rows_to_dict(query) -> List[dict]:
     """
     Function to convert query rows to readable dictionary
     :param query: sqlalchemy query
@@ -82,7 +83,7 @@ def convert_rows_to_dict(query) -> list:
     return result
 
 
-def select_all_from(session, table) -> list:
+def select_all_from(session, table) -> List[dict]:
     """
     Function to select all from provided table (like SELECT * FROM table)
     :param session: sqlalchemy session
@@ -94,16 +95,16 @@ def select_all_from(session, table) -> list:
     return convert_rows_to_dict(query)
 
 
-def select_id_from(session, table, id) -> list:
+def select_id_from(session, table, row_id) -> List[dict]:
     """
     Function to select specific id from provided table (like SELECT * FROM table WHERE table.id=id)
     :param session: sqlalchemy session
     :param table: table to select from
-    :param id: id to get
+    :param row_id: id to get
     :return: list of rows in table as dictionaries
     """
     # querying specific stuff from db
-    query = session.query(table).filter(table.id == id)
+    query = session.query(table).filter(table.id == row_id)
     return convert_rows_to_dict(query)
 
 

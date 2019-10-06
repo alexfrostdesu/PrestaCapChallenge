@@ -1,7 +1,7 @@
 import random
+import requests
 from mario import main
 import sql_handle
-import requests
 
 
 def create_random_grid(grid_size):

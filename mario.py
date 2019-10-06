@@ -1,13 +1,16 @@
 from typing import List, Tuple, Set, Iterable
-import numpy as np
 import itertools
+import numpy as np
 
 
 class GridError(Exception):
+    """
+    Custom Exception for grid validation
+    """
     pass
 
 
-def input_grid(grid: list = None) -> list:
+def input_grid(grid: List[str] = None) -> List[str]:
     """
     Inputting grid and splitting it to list of strings
     :param grid: (optional) predefined grid
@@ -67,7 +70,7 @@ def parse_grid(grid: List[str], grid_size: int) -> Tuple[tuple, tuple, np.ndarra
 
     for line_num, line in enumerate(grid):
         # type check
-        if type(line) is not str:
+        if isinstance(line, str):
             raise GridError("Line {} is not defined by string".format(line_num))
         # line (row) size check
         elif len(line) != grid_size:
@@ -260,9 +263,9 @@ def main(predef_size: int = None, predef_grid: List[str] = None) -> Tuple[bool, 
 
         return False, working_paths
 
-    except GridError as e:
+    except GridError as ex:
         print("Grid is not correctly defined")
-        print(e)
+        print(ex)
         return True, None
 
 
