@@ -24,6 +24,12 @@ You need to run `python rest_api.py` before `testing.py` if you want to test RES
 ### Game
 You have two inputs `N` which is the grid size, and `Grid` which is the actual map itself.
 `N` is a scalar integer, while `Grid` should be a list of strings, where each entry is a row of the map itself.
+Objects on the map are represented by different symbols: 
+- 'm' - Mario, or starting point
+- 'p' - princess, or end point
+- 'x' - obstacle
+- '-' - free cell
+
 Example:
 
 N = 3
