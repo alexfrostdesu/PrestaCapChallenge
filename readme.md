@@ -18,6 +18,7 @@ There are some testing scripts to provide basic testing for this app (with and w
 ```bash
 python testing.py
 ```
+You need to run `python rest_api.py` before `testing.py` if you want to test RESTful APIs
 
 ## Usage
 ### Game
