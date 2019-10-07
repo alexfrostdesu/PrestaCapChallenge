@@ -60,7 +60,7 @@ You can use `GET` method to get all games definitions and results from current s
 
 ### Serverless database (SQLite)
 
-This game uses serverless database to store game results. This database would be created in `/tmp/dbmario.db` relative path file.
+This game uses serverless database to store game results. This database would be created in `./dbmario.db` relative path file.
 
 ## License
 [MIT](https://opensource.org/licenses/MIT)

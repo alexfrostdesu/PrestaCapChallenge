@@ -11,7 +11,7 @@ def create_database():
     :return: engine, session, base
     """
     # creating database engine
-    engine = create_engine(r'sqlite:///tmp/dbmario.db', connect_args={'check_same_thread': False})
+    engine = create_engine(r'sqlite:///dbmario.db', connect_args={'check_same_thread': False})
 
     # creating session to work with database
     db_session = scoped_session(sessionmaker(bind=engine))
