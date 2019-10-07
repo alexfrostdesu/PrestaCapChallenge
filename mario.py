@@ -70,7 +70,7 @@ def parse_grid(grid: List[str], grid_size: int) -> Tuple[tuple, tuple, np.ndarra
 
     for line_num, line in enumerate(grid):
         # type check
-        if isinstance(line, str):
+        if not isinstance(line, str):
             raise GridError("Line {} is not defined by string".format(line_num))
         # line (row) size check
         elif len(line) != grid_size:
